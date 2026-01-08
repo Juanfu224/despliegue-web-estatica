@@ -1,0 +1,24 @@
+services:
+  web:
+    image: nginx:mainline-alpine
+    container_name: practica-nginx
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - /home/juanfu224/Docker/nginx:/usr/share/nginx
+    networks:
+      - practica-network
+
+  sftp:
+    image: atmoz/sftp:alpine
+    container_name: practica-sftp
+    restart: always
+    ports:
+      - "2222:22"
+    command: root:libre1234:1001
+
+networks:
+  practica-network:
+    driver: bridge
+    name: practica-network
