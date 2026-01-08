@@ -1,1 +1,1 @@
-# despliegue-web-est-tica
+# despliegue-web-estatica
