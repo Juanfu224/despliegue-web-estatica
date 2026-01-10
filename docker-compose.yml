@@ -6,7 +6,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - /home/juanfu224/Docker/nginx:/usr/share/nginx
+      - ./nginx/html:/usr/share/nginx/html
     networks:
       - practica-network
 
