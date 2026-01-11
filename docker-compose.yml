@@ -5,18 +5,26 @@ services:
     restart: always
     ports:
       - "8080:80"
+      - "443:443"
     volumes:
-      - /home/juanfu224/Docker/nginx/html:/usr/share/nginx/html
+      - ./nginx/html:/usr/share/nginx/html # Web
+      - ./default.conf:/etc/nginx/conf.d/default.conf #Configuración
+      - ./nginx-selfsigned.crt:/etc/nginx/ssl/nginx-selfsigned.crt # Certificado SSL
+      - ./nginx-selfsigned.key:/etc/nginx/ssl/nginx-selfsigned.key # Clave privada
     networks:
       - practica-network
 
   sftp:
     image: atmoz/sftp:alpine
     container_name: practica-sftp
+    command: usuario:libre1234:1000
     restart: always
     ports:
       - "2222:22"
-    command: root:libre1234:1001
+    volumes:
+      - ./nginx/html:/home/usuario/upload
+    networks:
+      - practica-network
 
 networks:
   practica-network:
