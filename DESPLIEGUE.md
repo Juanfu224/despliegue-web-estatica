@@ -429,12 +429,12 @@ _(Descripción de directivas: root, location, try_files)_
 ### Evidencias:
 
 - **evidencias/c-01-root.png** → Web principal en /
-![alt text](evidencias/c-01-root.png)
+  ![alt text](evidencias/c-01-root.png)
 - **evidencias/c-02-reloj.png** → Web secundaria en /reloj
-![alt text](evidencias/c-02-reloj.png)
+  ![alt text](evidencias/c-02-reloj.png)
 
 - **evidencias/c-03-defaultconf-inside.png** → Contenido de default.conf en contenedor
-![alt text](evidencias/c-03-defaultconf-inside.png)
+  ![alt text](evidencias/c-03-defaultconf-inside.png)
 
 ---
 
@@ -442,20 +442,93 @@ _(Descripción de directivas: root, location, try_files)_
 
 ### Respuesta:
 
-Se ha configurado autenticación básica HTTP para proteger la ruta `/admin/` utilizando:
+Se ha implementado autenticación básica HTTP para proteger el acceso a la ruta `/webdata/admin/`, restringiendo el acceso únicamente a usuarios autorizados mediante credenciales válidas.
 
-- Directiva `auth_basic` para activar autenticación
-- Directiva `auth_basic_user_file` apuntando a `.htpasswd`
-- Usuario configurado: `admin` con contraseña `Admin1234!`
+**Configuración implementada:**
 
-El archivo `.htpasswd` contiene usuarios y contraseñas encriptadas con bcrypt/apr1.
+La autenticación se realizó mediante las siguientes directivas en el archivo `default.conf`:
+
+```nginx
+location /webdata/admin/ {
+    root   /usr/share/nginx/html;
+    index  index.html index.htm;
+    auth_basic "Área Restringida - Administración";
+    auth_basic_user_file /etc/nginx/.htpasswd;
+}
+```
+
+**Directivas utilizadas:**
+
+- `auth_basic`: Activa la autenticación básica HTTP y define el mensaje del realm mostrado al usuario.
+- `auth_basic_user_file`: Especifica la ruta al archivo `.htpasswd` que contiene los usuarios y contraseñas encriptadas.
+
+**Proceso de configuración:**
+
+1. Instalación de herramientas necesarias en el contenedor:
+
+   ```bash
+   docker compose exec web sh -c "apk add --no-cache apache2-utils"
+   ```
+
+2. Creación del archivo `.htpasswd` con usuario y contraseña encriptada:
+
+   ```bash
+   docker compose exec web sh -c "htpasswd -bc /etc/nginx/.htpasswd admin 'Admin1234!'"
+   ```
+
+3. Configuración del location protegido en `default.conf` con las directivas de autenticación.
+
+4. Validación y recarga de la configuración:
+   ```bash
+   docker compose exec web nginx -t
+   docker compose exec web nginx -s reload
+   ```
+
+**Credenciales configuradas:**
+
+- Usuario: `admin`
+- Contraseña: `Admin1234!`
+
+El archivo `.htpasswd` almacena las contraseñas encriptadas mediante el algoritmo bcrypt/apr1, garantizando que las credenciales no se almacenen en texto plano.
+
+**Verificación del funcionamiento:**
+
+El servidor responde correctamente según las credenciales proporcionadas:
+
+- Sin credenciales: Retorna código HTTP 401 Unauthorized
+- Con credenciales válidas: Retorna código HTTP 200 OK y permite el acceso al contenido
 
 ### Evidencias:
 
-- **evidencias/d-01-admin-html.png** → Contenido de nginx/html/admin/index.html
-- **evidencias/d-02-defaultconf-auth.png** → Location /admin/ con auth_basic
+- **evidencias/d-01-admin-html.png** → Contenido de nginx/html/webdata/admin/index.html
+
+  ```bash
+  cat nginx/html/webdata/admin/index.html
+  ```
+
+  ![alt text](evidencias/d-01-admin-html.png)
+
+- **evidencias/d-02-defaultconf-auth.png** → Configuración del location /webdata/admin/ con auth_basic
+
+  ```bash
+  grep -A 5 "location /webdata/admin/" default.conf
+  ```
+
+  ![alt text](evidencias/d-02-defaultconf-auth.png)
+
 - **evidencias/d-03-curl-401.png** → Acceso sin credenciales (401 Unauthorized)
-- **evidencias/d-04-curl-200.png** → Acceso con credenciales (200 OK)
+
+  ```bash
+  curl -I https://localhost/webdata/admin/ -k
+  ```
+
+  ![alt text](evidencias/d-03-curl-401.png)
+
+- **evidencias/d-04-curl-200.png** → Acceso con credenciales válidas (200 OK)
+  ```bash
+  curl -I https://localhost/webdata/admin/ -k -u admin:Admin1234!
+  ```
+  ![alt text](evidencias/d-04-curl-200.png)
 
 ---
 
