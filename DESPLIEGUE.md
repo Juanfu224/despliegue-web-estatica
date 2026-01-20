@@ -311,9 +311,11 @@ docker compose exec web sh -c "grep -nE 'worker_processes|worker_connections|acc
 docker compose exec web nginx -t
 ```
 
-![alt text](image-1.png)
+![alt text](evidencias/a-02-nginx-t.png)
 
 - **evidencias/a-03-reload.png** → Recarga exitosa de Nginx
+
+![alt text](evidencias/a-03-reload.png)
 
 ---
 
@@ -321,34 +323,85 @@ docker compose exec web nginx -t
 
 ### Opción elegida:
 
-_(B1: Gzip o B2: Cabeceras de seguridad)_
+B1: Gzip
 
 ### Respuesta:
 
-_(Explicación de la configuración aplicada)_
+**Motivo de la elección:**
+Elegí implementar Gzip porque es fundamental para optimizar el rendimiento de aplicaciones web. La compresión Gzip reduce significativamente el tamaño de los archivos transferidos (hasta un 70-80% en archivos de texto)
+
+**Configuración aplicada:**
+
+Se creó el archivo `gzip.conf` con las siguientes directivas:
+
+- `gzip on;` → Activa la compresión Gzip
+- `gzip_types text/html text/css application/javascript application/json text/plain;` → Define los tipos MIME a comprimir (HTML, CSS, JS, JSON y texto plano)
+- `gzip_comp_level 5;` → Nivel de compresión 5 (balance óptimo entre compresión y uso de CPU)
+- `gzip_vary on;` → Añade cabecera Vary: Accept-Encoding para compatibilidad con proxies
+
+El archivo se monta en el contenedor mediante `docker-compose.yml` y se incluye en la configuración principal de Nginx. La compresión se aplica automáticamente a todas las respuestas que coincidan con los tipos MIME configurados.
 
 ### Evidencias (B1):
 
 - **evidencias/b1-01-gzipconf.png** → Contenido de gzip.conf
+  ![alt text](evidencias/b1-01-gzipconf.png)
 - **evidencias/b1-02-compose-volume-gzip.png** → Montaje en docker-compose.yml
+  ![alt text](evidencias/b1-02-compose-volume-gzip.png)
 - **evidencias/b1-03-nginx-t.png** → Validación de configuración
+  ![alt text](evidencias/b1-03-nginx-t.png)
 - **evidencias/b1-04-curl-gzip.png** → Content-Encoding: gzip en respuesta
-
-### Evidencias (B2):
-
-- **evidencias/b2-01-defaultconf-headers.png** → Cabeceras configuradas y significado
-- **evidencias/b2-02-nginx-t.png** → Validación de configuración
-- **evidencias/b2-03-curl-https-headers.png** → Cabeceras presentes en HTTPS
+  ![alt text](evidencias/b1-04-curl-gzip.png)
 
 ### Módulo investigado:
 
-**Nombre:** _(Nombre del módulo)_
+**Nombre:** `ngx_http_stub_status_module`
 
-**Para qué sirve:** _(Descripción)_
+**Para qué sirve:**
+Este módulo proporciona acceso a información básica de estado del servidor Nginx en tiempo real. Permite monitorizar métricas como:
 
-**Cómo se instala/carga:** _(Pasos de instalación)_
+- Número de conexiones activas
+- Total de peticiones aceptadas y manejadas
+- Lecturas, escrituras y esperas actuales
+- Conexiones descartadas
 
-**Fuente(s):** _(Enlaces)_
+Es fundamental para monitorización, debugging y análisis de rendimiento del servidor web.
+
+**Cómo se instala/carga:**
+
+1. **Verificar si está compilado** (en la mayoría de distribuciones viene incluido por defecto):
+
+   ```bash
+   nginx -V 2>&1 | grep -o with-http_stub_status_module
+   ```
+
+2. **Si no está incluido**, recompilar Nginx con el flag:
+
+   ```bash
+   sudo apt install nginx
+   ```
+
+3. **Configuración** en `default.conf` o archivo de configuración:
+
+   ```nginx
+   location /nginx_status {
+       stub_status on;
+       access_log off;
+       allow 127.0.0.1;  # Solo permitir acceso local
+       deny all;
+   }
+   ```
+
+4. **Acceso a las métricas:**
+   ```bash
+   curl http://localhost:8080/nginx_status
+   ```
+   Salida:
+   ![alt text](evidencias/metrica.png)
+
+**Fuente(s):**
+
+- Documentación oficial Nginx: [http://nginx.org/en/docs/http/ngx_http_stub_status_module.html](http://nginx.org/en/docs/http/ngx_http_stub_status_module.html)
+- Nginx Admin Guide: [https://docs.nginx.com/nginx/admin-guide/monitoring/live-activity-monitoring/](https://docs.nginx.com/nginx/admin-guide/monitoring/live-activity-monitoring/)
 
 ---
 
@@ -376,8 +429,12 @@ _(Descripción de directivas: root, location, try_files)_
 ### Evidencias:
 
 - **evidencias/c-01-root.png** → Web principal en /
+![alt text](evidencias/c-01-root.png)
 - **evidencias/c-02-reloj.png** → Web secundaria en /reloj
+![alt text](evidencias/c-02-reloj.png)
+
 - **evidencias/c-03-defaultconf-inside.png** → Contenido de default.conf en contenedor
+![alt text](evidencias/c-03-defaultconf-inside.png)
 
 ---
 
