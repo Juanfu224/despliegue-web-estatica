@@ -554,9 +554,11 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 ### Evidencias:
 
 - **evidencias/e-01-ls-certs.png** → Certificados en el host
+  ![alt text](evidencias/e-01-ls-certs.png)
 - **evidencias/e-02-compose-certs.png** → Montaje en docker-compose.yml
+  ![alt text](evidencias/e-02-ls-certs.png)
 - **evidencias/e-03-defaultconf-ssl.png** → ssl_certificate y ssl_certificate_key
-
+  ![alt text](evidencias/e-03-ls-certs.png)
 ---
 
 ## f) Comunicaciones seguras
@@ -578,8 +580,9 @@ Separar la lógica permite: redirigir automáticamente todo tráfico HTTP a HTTP
 ### Evidencias:
 
 - **evidencias/f-01-https.png** → Navegación por https://localhost:443
+![alt text](evidencias/f-01-https.png)
 - **evidencias/f-02-301-network.png** → 301 Moved Permanently en DevTools
-
+![alt text](evidencias/f-02-301-network.png)
 ---
 
 ## g) Documentación
