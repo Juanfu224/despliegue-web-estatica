@@ -642,7 +642,9 @@ Al subir archivos por SFTP, pueden crearse con owner `1000:1000` (usuario del co
 ### Evidencias:
 
 - **evidencias/h-01-root.png** → Web principal funcionando
+![alt text](evidencias/h-01-root.png)
 - **evidencias/h-02-reloj.png** → Web /reloj funcionando
+![alt text](evidencias/h-02-reloj.png)
 
 ---
 
@@ -676,7 +678,7 @@ Al subir archivos por SFTP, pueden crearse con owner `1000:1000` (usuario del co
 ### Evidencias:
 
 - **evidencias/i-01-compose-ps.png** → Servicios activos con puertos mapeados
-
+![alt text](evidencias/i-01-compose-ps.png)
 ---
 
 ## j) Logs: monitorización y análisis
@@ -706,8 +708,9 @@ Usando `awk` sobre `/var/log/nginx/access.log` se extrajeron:
 ### Evidencias:
 
 - **evidencias/j-01-logs-follow.png** → `docker compose logs -f web`
+![alt text](evidencias/j-01-logs-follow.png)
 - **evidencias/j-02-metricas.png** → Métricas extraídas con awk
-
+![alt text](image.png)
 ---
 
 # Checklist Final
@@ -729,15 +732,15 @@ Usando `awk` sobre `/var/log/nginx/access.log` se extrajeron:
 ## Parte 2: Evaluación RA2
 
 - ✅ **a)** Parámetros de administración
-- ⬜ **b)** Ampliación de funcionalidad + módulo investigado
-- ⬜ **c)** Sitios virtuales / multi-sitio
-- ⬜ **d)** Autenticación y control de acceso
-- ⬜ **e)** Certificados digitales
-- ⬜ **f)** Comunicaciones seguras
-- ⬜ **g)** Documentación
-- ⬜ **h)** Ajustes para implantación de apps
-- ⬜ **i)** Virtualización en despliegue
-- ⬜ **j)** Logs: monitorización y análisis
+- ✅ **b)** Ampliación de funcionalidad + módulo investigado
+- ✅ **c)** Sitios virtuales / multi-sitio
+- ✅ **d)** Autenticación y control de acceso
+- ✅ **e)** Certificados digitales
+- ✅ **f)** Comunicaciones seguras
+- ✅ **g)** Documentación
+- ✅ **h)** Ajustes para implantación de apps
+- ✅ **i)** Virtualización en despliegue
+- ✅ **j)** Logs: monitorización y análisis
 
 ---
 
